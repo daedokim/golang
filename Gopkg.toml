@@ -30,5 +30,17 @@
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/gin-gonic/gin"
-  version = "1.2.0"
+  name = "github.com/go-sql-driver/mysql"
+  version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/jinzhu/gorm"
+  version = "1.9.1"
+
+[[constraint]]
+  name = "github.com/labstack/gommon"
+  version = "0.2.6"
+
+[[constraint]]
+  name = "github.com/neko-neko/echo-logrus"
+  version = "1.0.3"

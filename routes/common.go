@@ -44,5 +44,12 @@ func LoginWeb(data map[string]interface{}) interface{} {
 // LoginMobile is 모바일용 로그인
 func LoginMobile(data map[string]interface{}) interface{} {
 	var returnVal interface{}
+
+	uid := data["uid"].(string)
+
+	if uid == "" {
+
+	}
+
 	return returnVal
 }
