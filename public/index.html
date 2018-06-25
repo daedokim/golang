@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>WebSocket</title>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+<body>
+    <p id="output"></p>
+
+    <p>
+        <button class="login" type="button">login</button>
+        <button class="dataPush" type="button">dataPush</button>
+
+    </p>
+    <script>
+        var loc = window.location;
+        var uri = 'ws:';
+
+        if (loc.protocol === 'https:') {
+            uri = 'wss:';
+        }
+        uri += '//' + loc.host;
+        uri += loc.pathname + 'ws';
+
+        ws = new WebSocket(uri)
+
+        ws.onopen = function () {
+            console.log('Connected')
+        }
+
+        ws.onmessage = function (evt) {
+            var out = document.getElementById('output');
+            out.innerHTML += evt.data + '<br>';
+        }
+
+        ws.onclose = function() {
+            console.log("close");
+        }
+
+        var uniqueID = GetID();
+
+        $(function () {
+            $('.login').click(function () {
+
+
+
+                var packetData = {};
+                packetData.packetNum = 10;
+                packetData.packetData = {"id":uniqueID};
+                packetData.packetData.room = "ee";
+
+                var jsonStr = JSON.stringify(packetData);
+                ws.send(jsonStr); 
+            });
+
+            $('.dataPush').click(function () {
+
+                var packetData = {};
+                packetData.packetNum = 10;
+                packetData.packetData = { "id": uniqueID};
+                packetData.packetData.room = "ee";
+
+                var jsonStr = JSON.stringify(packetData);
+                ws.send(jsonStr);
+            });
+
+            
+        });
+
+        function GetID() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+    </script>
+
+</body>
+
+
+</html>
