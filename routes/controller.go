@@ -13,12 +13,12 @@ func (c *Controller) Init() {
 }
 
 // Handle is Handler
-func (c *Controller) Handle(packetNum int, packetData interface{}) interface{} {
+func (c *Controller) Handle(packetNum int, packetData map[string]interface{}) interface{} {
 	var returnVal interface{}
 
 	funcRef, exists := c.m[packetNum]
 	if exists {
-		returnVal = funcRef.(func(interface{}) interface{})(packetData)
+		returnVal = funcRef.(func(map[string]interface{}) interface{})(packetData)
 	}
 	return returnVal
 }

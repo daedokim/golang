@@ -37,13 +37,14 @@ func Receive(c echo.Context, ws *websocket.Conn) {
 	for {
 		var data PacketData
 		err := websocket.JSON.Receive(ws, &data)
+
 		if err != nil {
 			c.Logger().Error(err)
 			return
 		}
 
 		if data.PacketNum > 0 {
-			returnVal := controller.Handle(data.PacketNum, data.PacketData)
+			returnVal := controller.Handle(data.PacketNum, data.PacketData.(map[string]interface{}))
 
 			if returnVal != nil {
 				jsonString, err := json.Marshal(returnVal)
