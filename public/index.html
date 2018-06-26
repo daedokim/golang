@@ -11,9 +11,7 @@
     <p id="output"></p>
 
     <p>
-        <button class="login" type="button">login</button>
         <button class="dataPush" type="button">dataPush</button>
-
     </p>
     <script>
         var loc = window.location;
@@ -24,12 +22,18 @@
         }
         uri += '//' + loc.host;
         uri += loc.pathname + 'ws';
+        
+
+       
+        var uniqueID = GetID();
 
         ws = new WebSocket(uri)
 
         ws.onopen = function () {
             console.log('Connected')
-        }
+
+            login();                       
+        }        
 
         ws.onmessage = function (evt) {
             var out = document.getElementById('output');
@@ -40,22 +44,23 @@
             console.log("close");
         }
 
-        var uniqueID = GetID();
+        function login() {
+            var packetData = {};
+            packetData.packetNum = 1;
+            packetData.packetData = {"uid":uniqueID, "ostype":1};
+            var jsonStr = JSON.stringify(packetData);
+            ws.send(jsonStr); 
+        }
+
 
         $(function () {
-            $('.login').click(function () {
+            
+            $(document).ready(function() {
 
+          
 
-
-                var packetData = {};
-                packetData.packetNum = 1;
-                packetData.packetData = {"id":uniqueID};
-                packetData.packetData.room = "ee";
-
-                var jsonStr = JSON.stringify(packetData);
-                ws.send(jsonStr); 
             });
-
+            
             $('.dataPush').click(function () {
 
                 var packetData = {};
@@ -71,7 +76,26 @@
         });
 
         function GetID() {
-            return '_' + Math.random().toString(36).substr(2, 9);
+            //return '_' + Math.random().toString(36).substr(2, 9);
+            return "_" + GetUserAgent() + "11";
+        }
+
+        function GetUserAgent() {
+            var agt = navigator.userAgent.toLowerCase();
+            if (agt.indexOf("chrome") != -1) return 'Chrome'; 
+            if (agt.indexOf("opera") != -1) return 'Opera'; 
+            if (agt.indexOf("staroffice") != -1) return 'Star Office'; 
+            if (agt.indexOf("webtv") != -1) return 'WebTV'; 
+            if (agt.indexOf("beonex") != -1) return 'Beonex'; 
+            if (agt.indexOf("chimera") != -1) return 'Chimera'; 
+            if (agt.indexOf("netpositive") != -1) return 'NetPositive'; 
+            if (agt.indexOf("phoenix") != -1) return 'Phoenix'; 
+            if (agt.indexOf("firefox") != -1) return 'Firefox'; 
+            if (agt.indexOf("safari") != -1) return 'Safari'; 
+            if (agt.indexOf("skipstone") != -1) return 'SkipStone'; 
+            if (agt.indexOf("msie") != -1) return 'Internet Explorer'; 
+            if (agt.indexOf("netscape") != -1) return 'Netscape'; 
+            if (agt.indexOf("mozilla/5.0") != -1) return 'Mozilla'; 
         }
     </script>
 

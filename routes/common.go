@@ -1,6 +1,10 @@
 package routes
 
-// . "holdempoker/models"
+import (
+	"errors"
+	"holdempoker/models"
+	"time"
+)
 
 const (
 	// OsTypeWeb is 웹
@@ -9,47 +13,78 @@ const (
 	OsTypeIos = 1
 	// OsTypeAndroid is 안드로이드
 	OsTypeAndroid = 2
+
+	// NewUserCoin 새유저 코인
+	NewUserCoin = 100000000
 )
 
 // Login is 로그인을 한다.
-func Login(data map[string]interface{}) interface{} {
+func Login(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
-	osType := data["ostype"].(int)
+	var err error
 
-	switch osType {
+	ostype := data["ostype"].(float64)
+
+	switch ostype {
 	case OsTypeWeb:
-		returnVal = LoginWeb(data)
+		returnVal, err = LoginWeb(data)
 	case OsTypeIos:
 		fallthrough
 	case OsTypeAndroid:
-		returnVal = LoginMobile(data)
+		returnVal, err = LoginMobile(data)
 	}
 
-	return returnVal
+	return returnVal, err
 }
 
 // LoginWeb is 웹용 로그인
-func LoginWeb(data map[string]interface{}) interface{} {
+func LoginWeb(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 
-	id := data["id"].(string)
-	passwd := data["passwd"].(string)
+	//id := data["id"]
+	//passwd := data["passwd"].(string)
 
-	if id == "" || passwd == "" {
+	// if id == "" || passwd == "" {
 
-	}
-	return returnVal
+	// }
+	return returnVal, nil
 }
 
 // LoginMobile is 모바일용 로그인
-func LoginMobile(data map[string]interface{}) interface{} {
+func LoginMobile(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 
-	uid := data["uid"].(string)
+	if data["uid"] != nil {
+		var auth models.UserAuth
+		var user models.User
+		uid := data["uid"].(string)
+		ostype := int(data["ostype"].(float64))
+		notFound := db.Where(&models.UserAuth{UID: uid, OsType: ostype}).First(&auth).RecordNotFound()
 
-	if uid == "" {
+		if notFound == true {
+			session := db.Begin()
+			user = models.User{Coin: 1000000, UserID: uid, LoginDate: time.Now(), WriteDate: time.Now()}
 
+			if err := session.Create(&user).Error; err != nil {
+				session.Rollback()
+				return nil, err
+			}
+
+			if err := session.Create(&models.UserAuth{UserIndex: user.UserIndex, OsType: ostype, UID: uid}).Error; err != nil {
+				session.Rollback()
+				return nil, err
+			}
+			session.Commit()
+		} else {
+			if err := db.First(&user, "user_id = ?", uid).Error; err != nil {
+				return nil, errors.New("Error")
+			}
+		}
+
+		returnMap := make(map[string]interface{})
+		returnMap["User"] = user
+
+		returnVal = returnMap
 	}
-
-	return returnVal
+	return returnVal, nil
 }
