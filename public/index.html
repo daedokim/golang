@@ -29,6 +29,8 @@
 
         ws = new WebSocket(uri)
 
+        console.log(uri);
+
         ws.onopen = function () {
             console.log('Connected')
 
@@ -47,7 +49,7 @@
         function login() {
             var packetData = {};
             packetData.packetNum = 1;
-            packetData.packetData = {"uid":uniqueID, "ostype":1};
+            packetData.data = {"userId":uniqueID, "osType":1, "guestMode":true};
             var jsonStr = JSON.stringify(packetData);
             ws.send(jsonStr); 
         }
@@ -65,8 +67,8 @@
 
                 var packetData = {};
                 packetData.packetNum = 10;
-                packetData.packetData = { "id": uniqueID};
-                packetData.packetData.room = "ee";
+                packetData.data = { "id": uniqueID};
+                packetData.data.room = "ee";
 
                 var jsonStr = JSON.stringify(packetData);
                 ws.send(jsonStr);

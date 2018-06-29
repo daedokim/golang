@@ -29,8 +29,11 @@ func (c *Controller) Handle(packetNum int, packetData map[string]interface{}) mo
 
 	funcRef, exists := c.m[packetNum]
 	if exists {
-		returnVal := funcRef.(func(map[string]interface{}) interface{})(packetData)
-		returnData.PacketData = returnVal
+		returnVal, err := funcRef.(func(map[string]interface{}) (interface{}, error))(packetData)
+		if err != nil {
+			returnData.Error = err
+		}
+		returnData.Data = returnVal
 	}
 	return returnData
 }

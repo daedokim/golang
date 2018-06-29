@@ -16,6 +16,9 @@ type Config struct {
 	}
 	Host string
 	Port string
+	Cors struct {
+		Hosts []string
+	}
 }
 
 //LoadConfig Start

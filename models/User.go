@@ -6,13 +6,13 @@ import (
 
 // User 유저정보
 type User struct {
-	UserIndex int64 `gorm:"primary_key"`
-	Coin      int64
-	Nickname  string
-	LoginDate time.Time
-	WriteDate time.Time
-	UserID    string
-	Passwd    string
+	UserIndex int64     `gorm:"primary_key" json:"userIndex"`
+	Coin      int64     `json:"coin"`
+	Nickname  string    `json:"nickName"`
+	LoginDate time.Time `json:"loginDate"`
+	WriteDate time.Time `json:"writeDate"`
+	UserID    string    `json:"userId"`
+	Passwd    string    `json:"passwd"`
 }
 
 // TableName 유저테이블명

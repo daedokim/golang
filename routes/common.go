@@ -23,7 +23,11 @@ func Login(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 	var err error
 
-	ostype := data["ostype"].(float64)
+	if data["osType"] == nil {
+		return nil, errors.New("dd")
+	}
+
+	ostype := data["osType"].(float64)
 
 	switch ostype {
 	case OsTypeWeb:
@@ -54,29 +58,40 @@ func LoginWeb(data map[string]interface{}) (interface{}, error) {
 func LoginMobile(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 
-	if data["uid"] != nil {
+	if data["userId"] != nil {
 		var auth models.UserAuth
 		var user models.User
-		uid := data["uid"].(string)
-		ostype := int(data["ostype"].(float64))
-		notFound := db.Where(&models.UserAuth{UID: uid, OsType: ostype}).First(&auth).RecordNotFound()
+
+		guestmode := data["guestMode"].(bool)
+		userid := data["userId"].(string)
+		ostype := int(data["osType"].(float64))
+
+		var notFound bool
+
+		if guestmode == true {
+			notFound = db.Where(&models.UserAuth{UID: userid, OsType: ostype}).First(&auth).RecordNotFound()
+		} else {
+			notFound = db.Where(&models.User{UserID: userid}).First(&user).RecordNotFound()
+		}
 
 		if notFound == true {
 			session := db.Begin()
-			user = models.User{Coin: 1000000, UserID: uid, LoginDate: time.Now(), WriteDate: time.Now()}
+			user = models.User{Coin: 1000000, UserID: userid, LoginDate: time.Now(), WriteDate: time.Now()}
 
 			if err := session.Create(&user).Error; err != nil {
 				session.Rollback()
 				return nil, err
 			}
 
-			if err := session.Create(&models.UserAuth{UserIndex: user.UserIndex, OsType: ostype, UID: uid}).Error; err != nil {
-				session.Rollback()
-				return nil, err
+			if guestmode == true {
+				if err := session.Create(&models.UserAuth{UserIndex: user.UserIndex, OsType: ostype, UID: userid}).Error; err != nil {
+					session.Rollback()
+					return nil, err
+				}
 			}
 			session.Commit()
 		} else {
-			if err := db.First(&user, "user_id = ?", uid).Error; err != nil {
+			if err := db.First(&user, "user_id = ?", userid).Error; err != nil {
 				return nil, errors.New("Error")
 			}
 		}

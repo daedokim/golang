@@ -57,7 +57,7 @@ func Receive(c echo.Context, ws *websocket.Conn) {
 		}
 
 		if data.PacketNum > 0 {
-			returnVal := controller.Handle(data.PacketNum, data.PacketData.(map[string]interface{}))
+			returnVal := controller.Handle(data.PacketNum, data.Data.(map[string]interface{}))
 
 			jsonString, err := json.Marshal(returnVal)
 			if err != nil {
@@ -85,10 +85,16 @@ func main() {
 	e := echo.New()
 	log.Logger().SetOutput(os.Stdout)
 	log.Logger().SetLevel(echoLog.DEBUG)
+
 	e.Logger = log.Logger()
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Static("/", "public")
 	e.GET("/ws", handle)
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: Conf.Cors.Hosts,
+		AllowMethods: []string{echo.GET},
+	}))
 	e.Logger.Fatal(e.Start(Conf.Port))
 }
