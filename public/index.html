@@ -11,7 +11,7 @@
     <p id="output"></p>
 
     <p>
-        <button class="dataPush" type="button">dataPush</button>
+        <button class="dataPush" type="button">룸정보 가져오기</button>
     </p>
     <script>
         var loc = window.location;
@@ -66,10 +66,8 @@
             $('.dataPush').click(function () {
 
                 var packetData = {};
-                packetData.packetNum = 10;
-                packetData.data = { "id": uniqueID};
-                packetData.data.room = "ee";
-
+                packetData.packetNum = 2;
+                packetData.data = { "roomIndex": 1};
                 var jsonStr = JSON.stringify(packetData);
                 ws.send(jsonStr);
             });

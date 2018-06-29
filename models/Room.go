@@ -2,7 +2,7 @@ package models
 
 // Room is 게임룸 정보
 type Room struct {
-	RoomIndex        int   `json:"roomIndex"`
+	RoomIndex        int   `json:"roomIndex" gorm:"primary_key"`
 	State            int   `json:"state"`
 	Round            int   `json:"round"`
 	Card1            int   `json:"card1"`

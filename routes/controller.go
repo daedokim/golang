@@ -18,7 +18,7 @@ var db *gorm.DB
 func (c *Controller) Init() {
 	c.m = make(map[int]interface{})
 	c.m[1] = Login
-	c.m[10] = GetRoom
+	c.m[2] = GetRoom
 	db = database.GetDBInstance().GetDB()
 }
 

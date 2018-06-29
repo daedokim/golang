@@ -61,12 +61,11 @@ func LoginMobile(data map[string]interface{}) (interface{}, error) {
 	if data["userId"] != nil {
 		var auth models.UserAuth
 		var user models.User
+		var notFound bool
 
 		guestmode := data["guestMode"].(bool)
 		userid := data["userId"].(string)
 		ostype := int(data["osType"].(float64))
-
-		var notFound bool
 
 		if guestmode == true {
 			notFound = db.Where(&models.UserAuth{UID: userid, OsType: ostype}).First(&auth).RecordNotFound()
