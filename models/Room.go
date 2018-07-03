@@ -1,6 +1,6 @@
 package models
 
-// Room is 게임룸 정보
+// Room isx임룸 정보
 type Room struct {
 	RoomIndex        int   `json:"roomIndex" gorm:"primary_key"`
 	State            int   `json:"state"`
@@ -32,4 +32,33 @@ type Room struct {
 // TableName 테이블 이름
 func (Room) TableName() string {
 	return "tbl_room"
+}
+
+// Update 값을 업데이트
+func (r *Room) Update(room Room) {
+	r.RoomIndex = room.RoomIndex
+	r.State = room.State
+	r.Round = room.Round
+	r.Card1 = room.Card1
+	r.Card2 = room.Card2
+	r.Card3 = room.Card3
+	r.Card4 = room.Card4
+	r.Card5 = room.Card5
+	r.LastBet = room.LastBet
+	r.LastRaise = room.LastRaise
+	r.WinnerUserIndex = room.WinnerUserIndex
+	r.CurrentUserIndex = room.CurrentUserIndex
+	r.DealerChairIndex = room.DealerChairIndex
+	r.OwnerIndex = room.OwnerIndex
+	r.TotalBet = room.TotalBet
+	r.StageBet = room.StageBet
+	r.LastBetType = room.LastBetType
+	r.BuyInMin = room.BuyInMin
+	r.BuyInMax = room.BuyInMax
+	r.Stage = room.Stage
+	r.BetFinished = room.BetFinished
+	r.BetCount = room.BetCount
+	r.CurrentOrderNo = room.CurrentOrderNo
+	r.MinbetAmount = room.MinbetAmount
+	r.WaitTimeout = room.WaitTimeout
 }

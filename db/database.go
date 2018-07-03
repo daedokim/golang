@@ -15,8 +15,8 @@ type Database struct {
 var instance *Database
 var once sync.Once
 
-// GetDBInstance is 인스턴스 생성
-func GetDBInstance() *Database {
+// GetInstance is 인스턴스 생성
+func GetInstance() *Database {
 	once.Do(func() {
 		instance = &Database{}
 	})

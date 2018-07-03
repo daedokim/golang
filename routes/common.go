@@ -4,6 +4,8 @@ import (
 	"errors"
 	"holdempoker/models"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 const (
@@ -18,7 +20,7 @@ const (
 	NewUserCoin = 100000000
 )
 
-// Login is 로그인을 한다.
+// Login 로그인을 한다.
 func Login(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 	var err error
@@ -73,9 +75,11 @@ func LoginMobile(data map[string]interface{}) (interface{}, error) {
 			notFound = db.Where(&models.User{UserID: userid}).First(&user).RecordNotFound()
 		}
 
+		var session *gorm.DB
+
 		if notFound == true {
-			session := db.Begin()
-			user = models.User{Coin: 1000000, UserID: userid, LoginDate: time.Now(), WriteDate: time.Now()}
+			session = db.Begin()
+			user = models.User{Coin: 1000000, UserID: userid, LoginDate: time.Now(), WriteDate: time.Now(), Nickname: "NoName"}
 
 			if err := session.Create(&user).Error; err != nil {
 				session.Rollback()
@@ -93,6 +97,14 @@ func LoginMobile(data map[string]interface{}) (interface{}, error) {
 			if err := db.First(&user, "user_id = ?", userid).Error; err != nil {
 				return nil, errors.New("Error")
 			}
+
+			session = db.Begin()
+			user.LoginDate = time.Now()
+			if err := session.Update(&user).Error; err != nil {
+				session.Rollback()
+				return nil, err
+			}
+			session.Commit()
 		}
 
 		returnMap := make(map[string]interface{})

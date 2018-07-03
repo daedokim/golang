@@ -2,6 +2,7 @@ package routes
 
 import (
 	database "holdempoker/db"
+	"holdempoker/maps"
 	"holdempoker/models"
 
 	"github.com/jinzhu/gorm"
@@ -13,13 +14,17 @@ type Controller struct {
 }
 
 var db *gorm.DB
+var dmap *maps.DataMap
 
 // Init is 초기화
 func (c *Controller) Init() {
 	c.m = make(map[int]interface{})
+	db = database.GetInstance().GetDB()
+	dmap = maps.GetInstance()
+
 	c.m[1] = Login
 	c.m[2] = GetRoom
-	db = database.GetDBInstance().GetDB()
+	c.m[3] = JoinGame
 }
 
 // Handle 컨트롤러 핸들링

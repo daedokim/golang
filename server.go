@@ -63,6 +63,7 @@ func Receive(c echo.Context, ws *websocket.Conn) {
 			if err != nil {
 				c.Logger().Error(err)
 			}
+
 			err = websocket.JSON.Send(ws, string(jsonString))
 			if err != nil {
 				c.Logger().Error(err)
@@ -77,7 +78,7 @@ func main() {
 	Conf = config.Config{}
 	Conf.LoadConfig()
 
-	database.GetDBInstance().OpenDatabase(&Conf)
+	database.GetInstance().OpenDatabase(&Conf)
 
 	controller = routes.Controller{}
 	controller.Init()

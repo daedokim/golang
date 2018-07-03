@@ -11,7 +11,9 @@
     <p id="output"></p>
 
     <p>
-        <button class="dataPush" type="button">룸정보 가져오기</button>
+        <button class="dataPush" type="button">룸정보 가져오기</button> <br />
+        <button class="playerJoin" type="button">플레이어 조인하기</button> <br />
+
     </p>
     <script>
         var loc = window.location;
@@ -56,10 +58,7 @@
 
 
         $(function () {
-            
             $(document).ready(function() {
-
-          
 
             });
             
@@ -72,6 +71,14 @@
                 ws.send(jsonStr);
             });
 
+            $('.playerJoin').click(function () {
+
+                var packetData = {};
+                packetData.packetNum = 3;
+                packetData.data = {"roomIndex": 1, "userIndex":100049, "chairIndex":1, "buyInLeft":100000};
+                var jsonStr = JSON.stringify(packetData);
+                ws.send(jsonStr);
+            });
             
         });
 
