@@ -79,7 +79,7 @@ func LoginMobile(data map[string]interface{}) (interface{}, error) {
 
 		if notFound == true {
 			session = db.Begin()
-			user = models.User{Coin: 1000000, UserID: userid, LoginDate: time.Now(), WriteDate: time.Now(), Nickname: "NoName"}
+			user = models.User{Coin: 1000000, UserID: userid, LoginDate: time.Now(), WriteDate: time.Now(), NickName: "NoName"}
 
 			if err := session.Create(&user).Error; err != nil {
 				session.Rollback()
@@ -99,8 +99,7 @@ func LoginMobile(data map[string]interface{}) (interface{}, error) {
 			}
 
 			session = db.Begin()
-			user.LoginDate = time.Now()
-			if err := session.Update(&user).Error; err != nil {
+			if err := session.Model(&user).Update("logn_date", time.Now()).Error; err != nil {
 				session.Rollback()
 				return nil, err
 			}

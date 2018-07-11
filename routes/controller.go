@@ -25,6 +25,8 @@ func (c *Controller) Init() {
 	c.m[1] = Login
 	c.m[2] = GetRoom
 	c.m[3] = JoinGame
+	c.m[4] = AddRoom
+	c.m[5] = ExitGame
 }
 
 // Handle 컨트롤러 핸들링

@@ -12,6 +12,15 @@ type RoomMap struct {
 	lock *sync.Mutex
 }
 
+//GetRooms 룸 목록을 가져온다.
+func (d *DataMap) GetRooms() []models.Room {
+	keys := make([]models.Room, 0, 3)
+	for k := range d.roomMap.data {
+		keys = append(keys, d.roomMap.data[k])
+	}
+	return keys
+}
+
 //GetRoom 룸정보를 가져온다.
 func (d *DataMap) GetRoom(roomIndex int) (models.Room, error) {
 	if room, ok := d.roomMap.data[roomIndex]; ok {

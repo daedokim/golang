@@ -49,4 +49,18 @@ const (
 	BetTypeAllin = 5
 	// BetTypeFold is 뱃타입:폴드
 	BetTypeFold = 6
+
+	//CardCount 카드 총 갯수
+	CardCount = 52
+
+	//WaitTimeoutForSetting 세팅 타임아웃
+	WaitTimeoutForSetting = 1000
+	//WaitTimeoutForInit 초기화 타임아웃
+	WaitTimeoutForInit = 1000
+	//WaitTimeoutForReady 준비 타임아웃
+	WaitTimeoutForReady = 5000
+	//WaitTimeoutForGamePlayer 게임플레이어별 타임아웃
+	WaitTimeoutForGamePlayer = 17000
+	//MaxGamePlayerCount 최대 게임 플레이어 카운트
+	MaxGamePlayerCount = 9
 )

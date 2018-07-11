@@ -8,7 +8,7 @@ import (
 type User struct {
 	UserIndex int64     `gorm:"primary_key" json:"userIndex"`
 	Coin      int64     `json:"coin"`
-	Nickname  string    `json:"nickName"`
+	NickName  string    `json:"nickName"`
 	LoginDate time.Time `json:"loginDate"`
 	WriteDate time.Time `json:"writeDate"`
 	UserID    string    `json:"userId"`

@@ -49,7 +49,6 @@ func (d *DataMap) ModifyGamePlayer(gamePlayer models.GamePlayer) error {
 		} else {
 			return err
 		}
-
 		if isUpdate == true {
 			d.gamePlayerMap.data[gamePlayer.RoomIndex] = gamePlayers
 		}

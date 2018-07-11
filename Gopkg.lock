@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/bradfitz/slice"
+  packages = ["."]
+  revision = "d9036e2120b5ddfa53f3ebccd618c4af275f47da"
+
+[[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
@@ -157,6 +163,12 @@
 
 [[projects]]
   branch = "master"
+  name = "go4.org"
+  packages = ["reflectutil"]
+  revision = "9599cf28b011184741f249bd9f9330756b506cbc"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -208,6 +220,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f585cf6eb310fe98ebca348c77f18cb9503661860d1a67d8cb331f28b57d5328"
+  inputs-digest = "90db27674229ff4a9e16f62d34e799f137754ce38d1affb42adf2e11a3983e02"
   solver-name = "gps-cdcl"
   solver-version = 1

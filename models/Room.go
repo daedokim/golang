@@ -15,7 +15,7 @@ type Room struct {
 	WinnerUserIndex  int64 `json:"winnerUserIndex"`
 	CurrentUserIndex int64 `json:"currentUserIndex"`
 	DealerChairIndex int   `json:"dealerChairIndex"`
-	OwnerIndex       int64 `json:"ownerIndex"`
+	OwnerIndex       int   `json:"ownerIndex"`
 	TotalBet         int64 `json:"totalBet"`
 	StageBet         int64 `json:"stageBet"`
 	LastBetType      int   `json:"lastBetType"`

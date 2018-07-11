@@ -11,8 +11,10 @@
     <p id="output"></p>
 
     <p>
+        <button class="addRoom" type="button">룸추가</button> <br />
         <button class="dataPush" type="button">룸정보 가져오기</button> <br />
         <button class="playerJoin" type="button">플레이어 조인하기</button> <br />
+        <button class="playerExit" type="button">플레이어 일어나기</button> <br />
 
     </p>
     <script>
@@ -75,10 +77,28 @@
 
                 var packetData = {};
                 packetData.packetNum = 3;
-                packetData.data = {"roomIndex": 1, "userIndex":100049, "chairIndex":1, "buyInLeft":100000};
+                packetData.data = {"roomIndex": 1, "userIndex":1, "chairIndex":1, "buyInLeft":100000};
                 var jsonStr = JSON.stringify(packetData);
                 ws.send(jsonStr);
             });
+            
+            $('.addRoom').click(function () {
+
+                var packetData = {};
+                packetData.packetNum = 4;
+                packetData.data = {"buyInMin":1000, "buyInMax":100000};
+                var jsonStr = JSON.stringify(packetData);
+                ws.send(jsonStr);
+                });
+            $('.playerExit').click(function () {
+
+                var packetData = {};
+                packetData.packetNum = 5;
+                packetData.data = {"roomIndex": 1, "userIndex":1};
+                var jsonStr = JSON.stringify(packetData);
+                ws.send(jsonStr);
+            });
+
             
         });
 

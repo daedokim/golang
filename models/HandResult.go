@@ -2,11 +2,11 @@ package models
 
 // HandResult is 족보 결과 정보.
 type HandResult struct {
-	cardType  int
-	handType  int
-	hands     [7]int
-	kicks     [7]int
-	madeCards [7]int
+	CardType  int
+	HandType  int
+	Hands     [7]int
+	Kicks     [7]int
+	MadeCards [7]int
 }
 
 const (
@@ -48,9 +48,9 @@ const (
 // NewHandResult is 족보 객체를 생성
 func NewHandResult() *HandResult {
 	r := new(HandResult)
-	r.InitializeCards(&r.madeCards)
-	r.InitializeCards(&r.hands)
-	r.InitializeCards(&r.kicks)
+	r.InitializeCards(&r.MadeCards)
+	r.InitializeCards(&r.Hands)
+	r.InitializeCards(&r.Kicks)
 
 	return r
 }
@@ -60,8 +60,8 @@ func (r *HandResult) AddMadeCard(card int) {
 
 	isFound := false
 
-	for i := 0; i < len(r.madeCards); i++ {
-		if card == r.madeCards[i] {
+	for i := 0; i < len(r.MadeCards); i++ {
+		if card == r.MadeCards[i] {
 			isFound = true
 			break
 		}
@@ -69,9 +69,9 @@ func (r *HandResult) AddMadeCard(card int) {
 
 	// 메이드된 카드가 내 카드에 하나라도 발견되지 않는다면 메이드카드 배열에 넣는다.
 	if isFound == false {
-		for i := 0; i < len(r.madeCards); i++ {
-			if r.madeCards[i] == -1 {
-				r.madeCards[i] = card
+		for i := 0; i < len(r.MadeCards); i++ {
+			if r.MadeCards[i] == -1 {
+				r.MadeCards[i] = card
 				break
 			}
 		}
@@ -80,7 +80,7 @@ func (r *HandResult) AddMadeCard(card int) {
 
 // InitializeMadeCard is 메이드카드를 초기화 한다.
 func (r *HandResult) InitializeMadeCard() {
-	r.InitializeCards(&r.madeCards)
+	r.InitializeCards(&r.MadeCards)
 }
 
 // InitializeCards is 카드를 초기화한다.

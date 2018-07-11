@@ -10,6 +10,7 @@ import (
 	database "holdempoker/db"
 	"holdempoker/models"
 	"holdempoker/routes"
+	"holdempoker/threads"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
@@ -82,6 +83,11 @@ func main() {
 
 	controller = routes.Controller{}
 	controller.Init()
+	thread := threads.Thread{}
+
+	thread.InitJob()
+
+	go thread.Job()
 
 	e := echo.New()
 	log.Logger().SetOutput(os.Stdout)
