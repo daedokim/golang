@@ -30,24 +30,39 @@ func DataJob() {
 				}
 
 				if gamePlayers, err := dmap.GetGamePlayers(rooms[i].RoomIndex); err == nil {
-					for i := 0; i < len(gamePlayers); i++ {
-						if notFound := db.Where("room_index = ?", gamePlayers[i].RoomIndex).First(&gamePlayer).RecordNotFound(); notFound == true {
+					for j := 0; j < len(gamePlayers); j++ {
+						if notFound := db.Where("room_index = ? AND user_index = ?", gamePlayers[j].RoomIndex, gamePlayers[j].UserIndex).First(&gamePlayer).RecordNotFound(); notFound == true {
 							session := db.Begin()
-							if err := session.Create(gamePlayers[i]).Error; err != nil {
+							if err := session.Create(gamePlayers[j]).Error; err != nil {
 								session.Rollback()
 							}
 							session.Commit()
 						} else {
 							session := db.Begin()
-							if err := session.Update(gamePlayers[i]).Error; err != nil {
+							if err := session.Update(gamePlayers[j]).Error; err != nil {
 								session.Rollback()
 							}
 							session.Commit()
 						}
+
 					}
 				}
-
 			}
+
+			var noActionGamePlayer []models.GamePlayer
+			if notFound := db.Where("TIME_TO_SEC(timediff(now(),  last_action_date)) > ?", 60*5).Find(&noActionGamePlayer).RecordNotFound(); notFound == false {
+				for j := 0; j < len(noActionGamePlayer); j++ {
+					if _, err := dmap.GetGamePlayer(noActionGamePlayer[j].RoomIndex, noActionGamePlayer[j].UserIndex); err == nil {
+						session := db.Begin()
+						if err := db.Delete(noActionGamePlayer[j]); err != nil {
+							session.Rollback()
+						}
+						session.Commit()
+						dmap.RemoveGamePlayer(noActionGamePlayer[j])
+					}
+				}
+			}
+
 		}
 	}()
 }

@@ -15,13 +15,16 @@ func SetPlayerBet(data map[string]interface{}) (interface{}, error) {
 	roomIndex, userIndex := int(data["roomIndex"].(float64)), int64(data["userIndex"].(float64))
 	betType, callAmount, betAmount := int(data["betType"].(float64)), int64(data["callAmount"].(float64)), int64(data["betAmount"].(float64))
 
-	gamePlayer, err := dmap.GetGamePlayer(roomIndex, userIndex)
-
+	room, err := dmap.GetRoom(roomIndex)
 	if err != nil {
 		return returnVal, err
 	}
 
-	room, err := dmap.GetRoom(roomIndex)
+	if room.CurrentUserIndex != userIndex {
+		return returnVal, errors.New("this user is not currentUser")
+	}
+
+	gamePlayer, err := dmap.GetGamePlayer(roomIndex, userIndex)
 	if err != nil {
 		return returnVal, err
 	}
@@ -83,6 +86,12 @@ func SetPlayerBet(data map[string]interface{}) (interface{}, error) {
 		if err := SetAnotherBetStatusReady(roomIndex, userIndex); err != nil {
 			return returnVal, err
 		}
+	}
+
+	if roomInfo, err := GetRoom(data); err != nil {
+		return returnVal, err
+	} else {
+		returnVal = roomInfo
 	}
 
 	return returnVal, nil

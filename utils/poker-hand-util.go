@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"holdempoker/models"
 	"strconv"
 	"strings"
@@ -20,9 +21,14 @@ func (p *PokerHandUtil) CheckHands(cards []int) models.HandResult {
 	var funcRef interface{}
 	p.SetHands()
 
-	for i := 0; i < len(p.hands); i++ {
+	for i := len(p.hands) - 1; i >= 0; i-- {
 		funcRef = p.hands[i]
-		funcRef.(func([]int) models.HandResult)(cards)
+		result = funcRef.(func([]int) models.HandResult)(cards)
+
+		fmt.Println(result.HandType)
+		if result.HandType != models.HandTypeNone {
+			break
+		}
 	}
 	return result
 }
@@ -47,7 +53,7 @@ func (p *PokerHandUtil) SetHands() {
 // CheckRoyalStraightFlush 로얄스트레이트 플러쉬
 func (p *PokerHandUtil) CheckRoyalStraightFlush(cards []int) models.HandResult {
 
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	handsCount := 4
 	cardsCount := 5
 	hands := [4][5]int{
@@ -92,7 +98,7 @@ func (p *PokerHandUtil) CheckRoyalStraightFlush(cards []int) models.HandResult {
 
 // CheckStraightFlush 스트레이트 플러쉬
 func (p *PokerHandUtil) CheckStraightFlush(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	handsCount := 36
 	cardsCount := 5
 	hands := [36][5]int{
@@ -175,7 +181,7 @@ func (p *PokerHandUtil) CheckStraightFlush(cards []int) models.HandResult {
 
 // CheckPoker 포카드
 func (p *PokerHandUtil) CheckPoker(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	matchCount := 0
 	matchIndex := 0
 	i := 0
@@ -208,7 +214,7 @@ func (p *PokerHandUtil) CheckPoker(cards []int) models.HandResult {
 
 // CheckFullHouse 풀하우스
 func (p *PokerHandUtil) CheckFullHouse(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	i := 0
 	j := 0
 	hasTriple := false
@@ -311,7 +317,7 @@ func (p *PokerHandUtil) CheckFullHouse(cards []int) models.HandResult {
 
 // CheckFlush 풀러쉬
 func (p *PokerHandUtil) CheckFlush(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	i := 0
 	j := 0
 	matchCount := 0
@@ -367,7 +373,7 @@ func (p *PokerHandUtil) CheckFlush(cards []int) models.HandResult {
 
 // CheckStraight 스트레이트
 func (p *PokerHandUtil) CheckStraight(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	hands := [10]string{
 		"0,1,2,3,4",
 		"1,2,3,4,5",
@@ -438,7 +444,7 @@ func (p *PokerHandUtil) CheckStraight(cards []int) models.HandResult {
 
 // CheckTriple 트리플
 func (p *PokerHandUtil) CheckTriple(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	i := 0
 	j := 0
 	matchCount := 0
@@ -495,7 +501,7 @@ func (p *PokerHandUtil) CheckTriple(cards []int) models.HandResult {
 
 // CheckTwoPairs 투페어
 func (p *PokerHandUtil) CheckTwoPairs(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	i := 0
 	j := 0
 	k := 0
@@ -575,7 +581,7 @@ func (p *PokerHandUtil) CheckTwoPairs(cards []int) models.HandResult {
 
 // CheckOnePair 원페어
 func (p *PokerHandUtil) CheckOnePair(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	i := 0
 	j := 0
 	k := 0
@@ -642,7 +648,7 @@ func (p *PokerHandUtil) CheckOnePair(cards []int) models.HandResult {
 
 // CheckTitle 타이틀
 func (p *PokerHandUtil) CheckTitle(cards []int) models.HandResult {
-	result := models.HandResult{}
+	result := models.NewHandResult()
 	result.HandType = models.HandTypeTitle
 
 	for i := 0; i < len(cards); i++ {

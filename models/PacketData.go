@@ -4,5 +4,5 @@ package models
 type PacketData struct {
 	PacketNum int         `json:"packetNum"`
 	Data      interface{} `json:"data"`
-	Error     error       `json:"error"`
+	Error     string      `json:"error"`
 }

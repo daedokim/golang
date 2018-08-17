@@ -11,6 +11,7 @@ import (
 	"holdempoker/models"
 	"holdempoker/routes"
 	"holdempoker/threads"
+	"holdempoker/utils"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
@@ -65,7 +66,7 @@ func Receive(c echo.Context, ws *websocket.Conn) {
 				c.Logger().Error(err)
 			}
 
-			err = websocket.JSON.Send(ws, string(jsonString))
+			err = websocket.Message.Send(ws, string(jsonString))
 			if err != nil {
 				c.Logger().Error(err)
 			}
@@ -75,6 +76,8 @@ func Receive(c echo.Context, ws *websocket.Conn) {
 }
 
 func main() {
+
+	//test()
 
 	Conf = config.Config{}
 	Conf.LoadConfig()
@@ -94,7 +97,7 @@ func main() {
 	log.Logger().SetLevel(echoLog.DEBUG)
 
 	e.Logger = log.Logger()
-	//e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())7
 	e.Use(middleware.Recover())
 	e.Static("/", "public")
 	e.GET("/ws", handle)
@@ -104,4 +107,9 @@ func main() {
 		AllowMethods: []string{echo.GET},
 	}))
 	e.Logger.Fatal(e.Start(Conf.Port))
+}
+
+func test() {
+	hand := utils.PokerHandUtil{}
+	hand.CheckHands([]int{1, 13, 14, 16, 12, 26})
 }

@@ -27,7 +27,7 @@ type GamePlayer struct {
 	LastActionDate time.Time  `json:"lastActionDate"`
 	NoActionCount  int        `json:"noActionCount"`
 	Coin           int64      `json:"coin"`
-	NickName       string     `json:"NickName"`
+	NickName       string     `json:"nickName"`
 	UserIndex      int64      `json:"userIndex"`
 	Result         HandResult `json:"result"`
 }

@@ -38,6 +38,7 @@ func (d *DataMap) ModifyRoom(room models.Room) error {
 		return err
 	}
 	r.Update(room)
+	d.roomMap.data[room.RoomIndex] = r
 	d.roomMap.lock.Unlock()
 	return nil
 }

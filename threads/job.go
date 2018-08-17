@@ -19,7 +19,7 @@ var dmap *maps.DataMap
 func (t *Thread) Job() {
 
 	PokerJob()
-	DataJob()
+	//DataJob()
 }
 
 //InitJob 서버가 초기화될때 DB데이터와 동기화를 한다.

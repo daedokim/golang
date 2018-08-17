@@ -22,25 +22,27 @@ func PokerJob() {
 			diffTime := utils.GetCurrentTick() - timeTick
 			timeTick = utils.GetCurrentTick()
 			rooms := dmap.GetRooms()
+			var roomIndex int
 
 			for i := 0; i < len(rooms); i++ {
 				if _, ok := helpers[rooms[i].RoomIndex]; ok == false {
 					helpers[rooms[i].RoomIndex] = utils.CardSortingHelper{}
 				}
-				CheckWaitTime(&rooms[i], int(diffTime))
+
+				roomIndex = rooms[i].RoomIndex
+				CheckWaitTime(roomIndex, int(diffTime))
 
 				switch rooms[i].State {
 				case models.RoomStateWait:
-					GotoReady(rooms[i])
+					GotoReady(roomIndex)
 				case models.RoomStateReady:
-					GotoSetting(rooms[i])
+					GotoSetting(roomIndex)
 				case models.RoomStateSetting:
-					GotoPlay(rooms[i])
+					GotoPlay(roomIndex)
 				case models.RoomStatePlaying:
-					SetPlaying(rooms[i])
+					SetPlaying(roomIndex)
 				}
 			}
-
 			ClearNotUseHelper(rooms)
 		}
 	}()
@@ -56,8 +58,9 @@ func ClearNotUseHelper(rooms []models.Room) {
 }
 
 //GotoReady 대기중인 방일때
-func GotoReady(room models.Room) {
-	playerList, err := dmap.GetGamePlayers(room.RoomIndex)
+func GotoReady(roomIndex int) {
+	room, err := dmap.GetRoom(roomIndex)
+	playerList, err := dmap.GetGamePlayers(roomIndex)
 
 	if err == nil {
 		if len(playerList) >= 2 {
@@ -72,6 +75,9 @@ func GotoReady(room models.Room) {
 				room.Card3 = helper.Pop()
 				room.Card4 = helper.Pop()
 				room.Card5 = helper.Pop()
+
+				helpers[room.RoomIndex] = helper
+
 			}
 			dmap.ModifyRoom(room)
 		}
@@ -79,8 +85,8 @@ func GotoReady(room models.Room) {
 }
 
 //GotoSetting 대기중인 방일때
-func GotoSetting(room models.Room) {
-
+func GotoSetting(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	playerList, _ := GetJoinedPlayers(room.RoomIndex)
 
 	if room.WaitTimeout <= 0 {
@@ -94,10 +100,11 @@ func GotoSetting(room models.Room) {
 			//room.lastbet = 0;
 			room.StageBet = 0
 			room.LastRaise = 0
+			room.BetCount = 0
 			room.CurrentUserIndex = GetUserIndexByOwnerIndex(playerList, room.OwnerIndex)
 			room.CurrentOrderNo = GetOrderByOwnerIndex(playerList, room.OwnerIndex)
 
-			playerList = SetPlayersCard(helpers[room.RoomIndex], playerList)
+			playerList = SetPlayersCard(room.RoomIndex, playerList)
 			playerList = SetPlayerOrderNo(room.OwnerIndex, playerList)
 
 			for i := 0; i < len(playerList); i++ {
@@ -114,7 +121,8 @@ func GotoSetting(room models.Room) {
 }
 
 //GotoPlay 대기중인 방일때
-func GotoPlay(room models.Room) {
+func GotoPlay(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	if room.WaitTimeout <= 0 {
 		room.State = models.RoomStatePlaying
 		room.Stage = 3
@@ -124,40 +132,42 @@ func GotoPlay(room models.Room) {
 }
 
 //SetPlaying 대기중인 방일때
-func SetPlaying(room models.Room) {
+func SetPlaying(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	stageSet := room.Stage % 3
 
 	if room.Stage >= 3 && room.Stage < 14 {
 		switch stageSet {
 		case 0:
-			CheckBetStatus(room)
+			CheckBetStatus(roomIndex)
 		case 1:
-			CheckWinner(room)
+			CheckWinner(roomIndex)
 		case 2:
-			CheckSetting(room)
+			CheckSetting(roomIndex)
 		}
-		CheckGameStatus(room)
+		CheckGameStatus(roomIndex)
 	}
 	if room.Stage == 14 || room.Stage == 15 {
 		if room.WaitTimeout <= 0 {
-			GotoFinish(room)
+			GotoFinish(roomIndex)
 		}
 	} else if room.Stage == 17 {
 		if room.WaitTimeout <= 0 {
-			GotoInitialize(room)
+			GotoInitialize(roomIndex)
 		}
 	}
 }
 
 //CheckWaitTime 대기시간 체크
-func CheckWaitTime(room *models.Room, diffTime int) {
-
+func CheckWaitTime(roomIndex int, diffTime int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	if room.WaitTimeout > 0 {
 		room.WaitTimeout -= diffTime
 
 		if room.WaitTimeout < 0 {
 			room.WaitTimeout = 0
 		}
+		dmap.ModifyRoom(room)
 	}
 }
 
@@ -241,11 +251,15 @@ func GetUserIndexByOrderNo(roomIndex int, orderNo int) int64 {
 }
 
 //SetPlayersCard 플레이어들에게 카드를 세팅한다.
-func SetPlayersCard(helper utils.CardSortingHelper, playerList []models.GamePlayer) []models.GamePlayer {
+func SetPlayersCard(roomIndex int, playerList []models.GamePlayer) []models.GamePlayer {
+
+	helper := helpers[roomIndex]
+
 	for i := 0; i < len(playerList); i++ {
 		playerList[i].Card1 = helper.Pop()
 		playerList[i].Card2 = helper.Pop()
 	}
+	helpers[roomIndex] = helper
 
 	return playerList
 }
@@ -279,7 +293,8 @@ func InitGamePlayerMember(gamePlayer *models.GamePlayer) {
 }
 
 //CheckBetStatus 뱃상태를 체크한다.
-func CheckBetStatus(room models.Room) {
+func CheckBetStatus(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	var currentUserIndex int64
 	currentOrderNo := -1
 
@@ -294,6 +309,7 @@ func CheckBetStatus(room models.Room) {
 			if gamePlayer.BetStatus == models.BetStatusBetReady {
 				gamePlayer.BetType = models.BetTypeFold
 				gamePlayer.BetStatus = models.BetStatusBetComplete
+				gamePlayer.NoActionCount++
 
 				gamePlayer.LastBetType = gamePlayer.BetType
 				gamePlayer.Stage = room.Stage
@@ -303,7 +319,7 @@ func CheckBetStatus(room models.Room) {
 			// 대기하고있는 사용자가 하나도 없다면 다음 스테이지로 이동 한다.
 			if GetReadyCount(room.RoomIndex) == 0 {
 				room.Stage++
-				room.BetCount = 0
+				//room.BetCount = 0
 				room.WaitTimeout = models.WaitTimeoutForSetting
 				currentOrderNo = 0
 				currentUserIndex = 0
@@ -363,10 +379,12 @@ func GetNextOrderNo(roomIndex int, orderNo int) int {
 }
 
 //CheckSetting 세팅상태를 체크한다.
-func CheckSetting(room models.Room) {
+func CheckSetting(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	if room.WaitTimeout <= 0 {
 		room.Stage++
 
+		room.BetCount = 0
 		room.LastRaise = room.MinbetAmount
 		room.WaitTimeout = models.WaitTimeoutForGamePlayer
 
@@ -412,7 +430,8 @@ func ClearGamePlayerByStage(roomIndex int, stage int) {
 }
 
 //CheckGameStatus 게임상태를 체크한다.
-func CheckGameStatus(room models.Room) {
+func CheckGameStatus(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	playerCount := 0
 	var userIndex int64
 
@@ -445,7 +464,8 @@ func CheckGameStatus(room models.Room) {
 }
 
 // GotoInitialize 초기화로 이동
-func GotoInitialize(room models.Room) {
+func GotoInitialize(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	room.State = models.RoomStateWait
 	room.Stage = 0
 	room.TotalBet = 0
@@ -453,14 +473,22 @@ func GotoInitialize(room models.Room) {
 }
 
 // GotoFinish 최종평가로 이동
-func GotoFinish(room models.Room) {
+func GotoFinish(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	room.WaitTimeout = models.WaitTimeoutForInit
 	room.Stage = 17
 
 	if playerList, err := GetJoinedPlayers(room.RoomIndex); err == nil {
 		for i := 0; i < len(playerList); i++ {
-			if playerList[i].State == models.GamePlayerStateStandWait {
+			if playerList[i].State == models.GamePlayerStateStandWait || playerList[i].NoActionCount >= 3 {
 				dmap.RemoveGamePlayer(playerList[i])
+			} else {
+
+				playerList[i].BetCount = 0
+				playerList[i].BetStatus = models.BetStatusBetReady
+				playerList[i].State = models.GamePlayerStateSitWait
+				playerList[i].BetType = 0
+
 			}
 		}
 	}
@@ -469,13 +497,14 @@ func GotoFinish(room models.Room) {
 }
 
 //CheckWinner 승자를 체크한다.
-func CheckWinner(room models.Room) {
+func CheckWinner(roomIndex int) {
+	room, _ := dmap.GetRoom(roomIndex)
 	if room.Stage == 13 {
 		if playerList, err := GetJoinedPlayers(room.RoomIndex); err == nil {
 			validator := utils.WinnerValidator{}
 
 			for i := 0; i < len(playerList); i++ {
-				if playerList[i].State == models.GamePlayerStateStandWait {
+				if playerList[i].State == models.GamePlayerStateStandWait || playerList[i].State == models.GamePlayerStatePlay {
 					result := validator.GetResult([]int{room.Card1, room.Card2, room.Card3, room.Card4, room.Card5, playerList[i].Card1, playerList[i].Card2})
 					playerList[i].Result = result
 					dmap.ModifyGamePlayer(playerList[i])

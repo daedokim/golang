@@ -42,13 +42,13 @@ const (
 	// BetTypeCall is 뱃타입:콜
 	BetTypeCall = 2
 	// BetTypeBlind is 뱃타입:블라인드
-	BetTypeBlind = 3
+	BetTypeBlind = 30
 	// BetTypeRaise is 뱃타입:레이스
-	BetTypeRaise = 4
+	BetTypeRaise = 3
 	// BetTypeAllin is 뱃타입:올인
 	BetTypeAllin = 5
 	// BetTypeFold is 뱃타입:폴드
-	BetTypeFold = 6
+	BetTypeFold = 4
 
 	//CardCount 카드 총 갯수
 	CardCount = 52

@@ -20,8 +20,8 @@ func GetGamePlayers(roomIndex int) []models.GamePlayer {
 	return gamePlayers
 }
 
-//JoinGame 게임테이블에 참여한다.
-func JoinGame(data map[string]interface{}) (interface{}, error) {
+//Sit 게임테이블에 참여한다.
+func Sit(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 
 	if data["roomIndex"] == nil || data["userIndex"] == nil || data["chairIndex"] == nil || data["buyInLeft"] == nil {
@@ -54,19 +54,29 @@ func JoinGame(data map[string]interface{}) (interface{}, error) {
 	return returnVal, nil
 }
 
-//ExitGame 게임을 나간다
-func ExitGame(data map[string]interface{}) (interface{}, error) {
+//StandUp 게임을 나간다
+func StandUp(data map[string]interface{}) (interface{}, error) {
 	var returnVal interface{}
 	if data["roomIndex"] == nil || data["userIndex"] == nil {
 		return returnVal, errors.New("Argument Error")
 	}
 	roomIndex, userIndex := int(data["roomIndex"].(float64)), int64(data["userIndex"].(float64))
 
-	gamePlayer, err := dmap.GetGamePlayer(roomIndex, userIndex)
+	if gamePlayer, err := dmap.GetGamePlayer(roomIndex, userIndex); err == nil {
+		if room, err := dmap.GetRoom(roomIndex); err == nil {
+			if room.State != models.RoomStateWait {
+				gamePlayer.State = models.GamePlayerStateStandWait
+				dmap.ModifyGamePlayer(gamePlayer)
+			} else {
+				dmap.RemoveGamePlayer(gamePlayer)
+			}
 
-	if err != nil {
+		} else {
+			return returnVal, err
+		}
+	} else {
 		return returnVal, err
 	}
-	dmap.RemoveGamePlayer(gamePlayer)
+
 	return returnVal, nil
 }

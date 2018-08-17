@@ -2,11 +2,11 @@ package models
 
 // HandResult is 족보 결과 정보.
 type HandResult struct {
-	CardType  int
-	HandType  int
-	Hands     [7]int
-	Kicks     [7]int
-	MadeCards [7]int
+	CardType  int    `json:"cardType"`
+	HandType  int    `json:"handType"`
+	Hands     [7]int `json:"hands"`
+	Kicks     [7]int `json:"kicks"`
+	MadeCards [7]int `json:"madeCards"`
 }
 
 const (
@@ -46,8 +46,12 @@ const (
 )
 
 // NewHandResult is 족보 객체를 생성
-func NewHandResult() *HandResult {
-	r := new(HandResult)
+func NewHandResult() HandResult {
+	r := HandResult{}
+
+	r.HandType = HandTypeNone
+	r.CardType = CardTypeNone
+
 	r.InitializeCards(&r.MadeCards)
 	r.InitializeCards(&r.Hands)
 	r.InitializeCards(&r.Kicks)

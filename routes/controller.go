@@ -24,9 +24,10 @@ func (c *Controller) Init() {
 
 	c.m[1] = Login
 	c.m[2] = GetRoom
-	c.m[3] = JoinGame
+	c.m[3] = Sit
 	c.m[4] = AddRoom
-	c.m[5] = ExitGame
+	c.m[5] = StandUp
+	c.m[6] = SetPlayerBet
 }
 
 // Handle 컨트롤러 핸들링
@@ -38,7 +39,7 @@ func (c *Controller) Handle(packetNum int, packetData map[string]interface{}) mo
 	if exists {
 		returnVal, err := funcRef.(func(map[string]interface{}) (interface{}, error))(packetData)
 		if err != nil {
-			returnData.Error = err
+			returnData.Error = err.Error()
 		}
 		returnData.Data = returnVal
 	}
